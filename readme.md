@@ -5,7 +5,7 @@ This package provides a simple way to interact with Spotify's private API. It in
 ## Installation
 
 ```bash
-go get github.com/FrostBreker/spotify-private-api
+go get github.com/FrostBreker/spotify-private-api@v1.0.2
 ```
 
 ## Usage
