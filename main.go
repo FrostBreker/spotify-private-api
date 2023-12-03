@@ -1,17 +1,14 @@
 package spotifyprivateapi
 
-import (
-	"log"
-)
-
-func LogInfo(message string) {
-	log.Printf("[INFO] --> %v", message)
+type Client struct {
+	Debug bool // false
 }
 
-func LogError(message string) {
-	log.Printf("[ERROR] --> %v", message)
-}
+func NewClient(options Client) *Client {
 
-func LogDebug(message string) {
-	log.Printf("[DEBUG] --> %v", message)
+	client := &Client{
+		Debug: options.Debug || false,
+	}
+	LogInfo("Successfully created client")
+	return client
 }
