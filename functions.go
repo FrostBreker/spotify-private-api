@@ -86,7 +86,7 @@ func (c *Client) FetchTrackPlayCount(trackId string) (responseTypes.TrackPlayCou
 // It is used to fetch information about an artist from Spotify's private API.
 // It takes an artistId parameter, which is the Spotify ID of the artist.
 // The function returns an Artist object and an error.
-func (c *Client) FecthArtist(artistId string) (responseTypes.Artist, error) {
+func (c *Client) FecthArtist(artistId string) (responseTypes.ArtistResponseType, error) {
 	LogInfo("Fetching artist: " + artistId)
 
 	// Construct the request URL
@@ -100,7 +100,7 @@ func (c *Client) FecthArtist(artistId string) (responseTypes.Artist, error) {
 	if err != nil {
 		fmt.Println(err)
 		LogError("Errored when setting headers for the spotifyAPI")
-		return responseTypes.Artist{}, err
+		return responseTypes.ArtistResponseType{}, err
 	}
 
 	// Send the request
@@ -108,7 +108,7 @@ func (c *Client) FecthArtist(artistId string) (responseTypes.Artist, error) {
 	if err != nil {
 		fmt.Println(err)
 		LogError("Errored when sending request to the spotifyAPI")
-		return responseTypes.Artist{}, err
+		return responseTypes.ArtistResponseType{}, err
 	}
 
 	defer resp.Body.Close()
@@ -117,7 +117,7 @@ func (c *Client) FecthArtist(artistId string) (responseTypes.Artist, error) {
 	jsonStr, _ := io.ReadAll(resp.Body)
 
 	// Unmarshal the JSON response into a Artist object
-	var artistResponse responseTypes.Artist
+	var artistResponse responseTypes.ArtistResponseType
 	json.Unmarshal(jsonStr, &artistResponse)
 
 	LogInfo("Successfully fetched artist: " + artistId)
