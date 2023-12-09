@@ -14,8 +14,9 @@ import (
 // It takes a trackId parameter, which is the Spotify ID of the track.
 // The function returns a TrackResponse object and an error.
 func (c *Client) FetchTrack(trackId string) (responseTypes.TrackResponse, error) {
-	LogInfo("Fetching track: " + trackId)
-
+	if c.Debug {
+		LogInfo("Fetching track: " + trackId)
+	}
 	// Construct the request URL
 	requestURL := "https://api-partner.spotify.com/pathfinder/v1/query?operationName=getTrack&variables=%7B%22uri%22%3A%22spotify%3Atrack%3A" + trackId + "%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22e101aead6d78faa11d75bec5e36385a07b2f1c4a0420932d374d89ee17c70dd6%22%7D%7D"
 
@@ -26,7 +27,9 @@ func (c *Client) FetchTrack(trackId string) (responseTypes.TrackResponse, error)
 	req, err := SetHeadersForSpotifyRequest(req)
 	if err != nil {
 		fmt.Println(err)
-		LogError("Errored when setting headers for the spotifyAPI")
+		if c.Debug {
+			LogError("Errored when setting headers for the spotifyAPI")
+		}
 		return responseTypes.TrackResponse{}, err
 	}
 
@@ -34,7 +37,9 @@ func (c *Client) FetchTrack(trackId string) (responseTypes.TrackResponse, error)
 	resp, err := HttpClient.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		LogError("Errored when sending request to the spotifyAPI")
+		if c.Debug {
+			LogError("Errored when sending request to the spotifyAPI")
+		}
 		return responseTypes.TrackResponse{}, err
 	}
 
@@ -46,8 +51,9 @@ func (c *Client) FetchTrack(trackId string) (responseTypes.TrackResponse, error)
 	// Unmarshal the JSON response into a TrackResponse object
 	var trackResponse responseTypes.TrackResponse
 	json.Unmarshal(jsonStr, &trackResponse)
-
-	LogInfo("Successfully fetched track: " + trackId)
+	if c.Debug {
+		LogInfo("Successfully fetched track: " + trackId)
+	}
 	return trackResponse, nil
 }
 
@@ -57,19 +63,24 @@ func (c *Client) FetchTrack(trackId string) (responseTypes.TrackResponse, error)
 // and then extracts the play count from the response.
 // It returns a TrackPlayCount object and an error.
 func (c *Client) FetchTrackPlayCount(trackId string) (responseTypes.TrackPlayCount, error) {
-	LogInfo("Retrieving track playcount for track: " + trackId)
-
+	if c.Debug {
+		LogInfo("Retrieving track playcount for track: " + trackId)
+	}
 	// Fetch the track information
 	trackResponse, err := c.FetchTrack(trackId)
 	if err != nil {
-		LogError("Error fetching track (" + trackId + "): " + err.Error())
+		if c.Debug {
+			LogError("Error fetching track (" + trackId + "): " + err.Error())
+		}
 		return responseTypes.TrackPlayCount{}, err
 	}
 
 	// Convert the play count to an integer
 	playCount, err := strconv.Atoi(trackResponse.Data.TrackUnion.Playcount)
 	if err != nil {
-		LogError("Error during conversion")
+		if c.Debug {
+			LogError("Error during conversion")
+		}
 		return responseTypes.TrackPlayCount{}, err
 	}
 
@@ -78,7 +89,9 @@ func (c *Client) FetchTrackPlayCount(trackId string) (responseTypes.TrackPlayCou
 		TrackId:   trackId,
 		PlayCount: playCount,
 	}
-	LogInfo("Successfully retrieved track playcount for track: " + trackId)
+	if c.Debug {
+		LogInfo("Successfully retrieved track playcount for track: " + trackId)
+	}
 	return playCountObject, nil
 }
 
@@ -87,7 +100,9 @@ func (c *Client) FetchTrackPlayCount(trackId string) (responseTypes.TrackPlayCou
 // It takes an artistId parameter, which is the Spotify ID of the artist.
 // The function returns an Artist object and an error.
 func (c *Client) FetchArtist(artistId string) (responseTypes.ArtistResponseType, error) {
-	LogInfo("Fetching artist: " + artistId)
+	if c.Debug {
+		LogInfo("Fetching artist: " + artistId)
+	}
 
 	// Construct the request URL
 	requestURL := "https://api-partner.spotify.com/pathfinder/v1/query?operationName=queryArtistOverview&variables=%7B%22uri%22%3A%22spotify%3Aartist%3A" + artistId + "%22%2C%22locale%22%3A%22%22%2C%22includePrerelease%22%3Afalse%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%2235648a112beb1794e39ab931365f6ae4a8d45e65396d641eeda94e4003d41497%22%7D%7D"
@@ -99,7 +114,9 @@ func (c *Client) FetchArtist(artistId string) (responseTypes.ArtistResponseType,
 	req, err := SetHeadersForSpotifyRequest(req)
 	if err != nil {
 		fmt.Println(err)
-		LogError("Errored when setting headers for the spotifyAPI")
+		if c.Debug {
+			LogError("Errored when setting headers for the spotifyAPI")
+		}
 		return responseTypes.ArtistResponseType{}, err
 	}
 
@@ -107,7 +124,9 @@ func (c *Client) FetchArtist(artistId string) (responseTypes.ArtistResponseType,
 	resp, err := HttpClient.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		LogError("Errored when sending request to the spotifyAPI")
+		if c.Debug {
+			LogError("Errored when sending request to the spotifyAPI")
+		}
 		return responseTypes.ArtistResponseType{}, err
 	}
 
@@ -119,8 +138,9 @@ func (c *Client) FetchArtist(artistId string) (responseTypes.ArtistResponseType,
 	// Unmarshal the JSON response into a Artist object
 	var artistResponse responseTypes.ArtistResponseType
 	json.Unmarshal(jsonStr, &artistResponse)
-
-	LogInfo("Successfully fetched artist: " + artistId)
+	if c.Debug {
+		LogInfo("Successfully fetched artist: " + artistId)
+	}
 	return artistResponse, nil
 }
 
@@ -129,7 +149,9 @@ func (c *Client) FetchArtist(artistId string) (responseTypes.ArtistResponseType,
 // It takes an albumId parameter, which is the Spotify ID of the album.
 // The function returns an AlbumResponseType object and an error.
 func (c *Client) FetchAlbum(albumId string) (responseTypes.AlbumResponseType, error) {
-	LogInfo("Fetching album: " + albumId)
+	if c.Debug {
+		LogInfo("Fetching album: " + albumId)
+	}
 	// The `requestURL` variable is a string that contains the URL for making a GET request to Spotify's
 	// private API to fetch information about an album. It includes the `albumId` parameter in the URL to
 	// specify which album to fetch.
@@ -140,7 +162,9 @@ func (c *Client) FetchAlbum(albumId string) (responseTypes.AlbumResponseType, er
 	req, err := SetHeadersForSpotifyRequest(req)
 	if err != nil {
 		fmt.Println(err)
-		LogError("Errored when setting headers for the spotifyAPI")
+		if c.Debug {
+			LogError("Errored when setting headers for the spotifyAPI")
+		}
 		return responseTypes.AlbumResponseType{}, err
 	}
 
@@ -148,7 +172,9 @@ func (c *Client) FetchAlbum(albumId string) (responseTypes.AlbumResponseType, er
 
 	if err != nil {
 		fmt.Println(err)
-		LogError("Errored when sending request to the spotifyAPI")
+		if c.Debug {
+			LogError("Errored when sending request to the spotifyAPI")
+		}
 		return responseTypes.AlbumResponseType{}, err
 	}
 
@@ -163,6 +189,8 @@ func (c *Client) FetchAlbum(albumId string) (responseTypes.AlbumResponseType, er
 	// variable, which is of type `responseTypes.AlbumResponseType`.
 	var albumResponse responseTypes.AlbumResponseType
 	json.Unmarshal(jsonStr, &albumResponse)
-	LogInfo("Succesfully fetched album: " + albumId)
+	if c.Debug {
+		LogInfo("Succesfully fetched album: " + albumId)
+	}
 	return albumResponse, nil
 }
