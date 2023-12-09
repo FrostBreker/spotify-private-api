@@ -30,6 +30,7 @@ var HttpClient = &http.Client{
 	Timeout: 30 * time.Second,
 }
 
+// The function `GetSpotifyClientId` sends a POST request to the Spotify API to retrieve a client ID.
 func GetSpotifyClientId() (spotifyprivateapi.ResponseClientId, error) {
 	jsonBody := []byte(`{"client_data":{"client_version":"1.2.16.334.g29fe6bdc","client_id":"d8a5ed958d274c2e8ee717e6a4b0971d","js_sdk_data":{"device_brand":"unknown","device_model":"unknown","os":"windows","os_version":"NT 10.0","device_id":"653eea96ea4044e6725f27bc508ea9a5","device_type":"computer"}}}`)
 	bodyReader := bytes.NewReader(jsonBody)
@@ -75,6 +76,8 @@ func GetSpotifyClientId() (spotifyprivateapi.ResponseClientId, error) {
 	return response, nil
 }
 
+// The function `GetSpotifyClientToken` checks if a Spotify client token is saved in a file, and if
+// not, fetches a new token and saves it.
 func GetSpotifyClientToken() (spotifyprivateapi.ResponseClientToken, error) {
 	// Load saved response from file
 	savedResponseBytes, err := ioutil.ReadFile("response.json")
@@ -113,6 +116,8 @@ func GetSpotifyClientToken() (spotifyprivateapi.ResponseClientToken, error) {
 	return savedResponse, nil
 }
 
+// The function `FetchSpotifyClientToken` fetches a Spotify client token from a specific URL and
+// returns it as a response along with any errors encountered.
 func FetchSpotifyClientToken() (spotifyprivateapi.ResponseClientToken, error) {
 	req, err := http.NewRequest(http.MethodGet, "https://open.spotify.com/intl-fr", nil)
 	if err != nil {
@@ -152,6 +157,8 @@ func FetchSpotifyClientToken() (spotifyprivateapi.ResponseClientToken, error) {
 	return response, nil
 }
 
+// The function `SetHeadersForSpotifyRequest` sets the necessary headers for making a request to the
+// Spotify API.
 func SetHeadersForSpotifyRequest(req *http.Request) (*http.Request, error) {
 	responseClient, err := GetSpotifyClientId()
 	if err != nil {

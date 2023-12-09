@@ -28,6 +28,18 @@ playCount, err := client.FetchTrackPlayCount("trackId")
 if err != nil {
     log.Fatal(err)
 }
+
+// Fetch artist information
+artist, err := client.FetchArtist("artistId")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Fetch album information
+album, err := client.FetchAlbum("albumId")
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Documentation
@@ -39,6 +51,14 @@ FetchTrack sends a GET request to Spotify's private API to fetch information abo
 ### FetchTrackPlayCount(trackId string) (responseTypes.TrackPlayCount, error)
 
 FetchTrackPlayCount first calls FetchTrack to get the track information, then it extracts the play count from the response. The trackId parameter is the Spotify ID of the track. It returns a TrackPlayCount object and an error.
+
+### FetchArtist(artistId string) (responseTypes.Artist, error)
+
+FetchArtist fetches information about an artist from Spotify's private API. It takes an artistId parameter, which is the Spotify ID of the artist. It returns an Artist object and an error.
+
+### FetchAlbum(albumId string) (responseTypes.Album, error)
+
+FetchAlbum fetches information about an album from Spotify's private API. It takes an albumId parameter, which is the Spotify ID of the album. It returns an AlbumResponseType object and an error.
 
 ## Contributing
 
