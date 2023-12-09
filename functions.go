@@ -86,7 +86,7 @@ func (c *Client) FetchTrackPlayCount(trackId string) (responseTypes.TrackPlayCou
 // It is used to fetch information about an artist from Spotify's private API.
 // It takes an artistId parameter, which is the Spotify ID of the artist.
 // The function returns an Artist object and an error.
-func (c *Client) FecthArtist(artistId string) (responseTypes.ArtistResponseType, error) {
+func (c *Client) FetchArtist(artistId string) (responseTypes.ArtistResponseType, error) {
 	LogInfo("Fetching artist: " + artistId)
 
 	// Construct the request URL
