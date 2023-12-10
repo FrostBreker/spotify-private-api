@@ -190,7 +190,97 @@ func (c *Client) FetchAlbum(albumId string) (responseTypes.AlbumResponseType, er
 	var albumResponse responseTypes.AlbumResponseType
 	json.Unmarshal(jsonStr, &albumResponse)
 	if c.Debug {
-		LogInfo("Succesfully fetched album: " + albumId)
+		LogInfo("Successfully fetched album: " + albumId)
 	}
 	return albumResponse, nil
+}
+
+// The `Search` function is a method of the `Client` struct in the `spotifyprivateapi` package. It is
+// used to search for a term using Spotify's private API.
+// It takes a `sentence` parameter, which is the search term to search for, and a `onlyTopResults`
+// parameter, which is a boolean that specifies whether to only return the top results.
+// The function returns a `SearchResponseType` object and an error.
+func (c *Client) Search(sentence string) (responseTypes.SearchResponseType, error) {
+	if c.Debug {
+		LogInfo("Searching with spotify: " + sentence)
+	}
+
+	// The `requestURL` variable is a string that contains the URL for making a GET request to Spotify's
+	// private API to search for a term. It includes the `sentence` parameter in the URL to specify the
+	// search term, along with other parameters such as the offset, limit, number of top results, and
+	// whether to include audiobooks.
+	requestURL := "https://api-partner.spotify.com/pathfinder/v1/query?operationName=searchDesktop&variables=%7B%22searchTerm%22%3A%22" + sentence + "%22%2C%22offset%22%3A0%2C%22limit%22%3A10%2C%22numberOfTopResults%22%3A5%2C%22includeAudiobooks%22%3Atrue%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%2221969b655b795601fb2d2204a4243188e75fdc6d3520e7b9cd3f4db2aff9591e%22%7D%7D"
+	client := &http.Client{}
+
+	// The code snippet is creating a new HTTP GET request using the `http.NewRequest` function. It sets
+	// the request method to "GET", the request URL to `requestURL`, and the request body to `nil`.
+	req, _ := http.NewRequest("GET", requestURL, nil)
+	req, err := SetHeadersForSpotifyRequest(req)
+	if err != nil {
+		fmt.Println(err)
+		if c.Debug {
+			LogError("Errored when setting headers for the spotifyAPI")
+		}
+		return responseTypes.SearchResponseType{}, err
+	}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		fmt.Println(err)
+		if c.Debug {
+			LogError("Errored when sending request to the spotifyAPI")
+		}
+		return responseTypes.SearchResponseType{}, err
+	}
+
+	// The code snippet `defer resp.Body.Close()` is deferring the closing of the response body until the
+	// surrounding function returns. This ensures that the response body is always closed, even if an error
+	// occurs.
+	defer resp.Body.Close()
+	jsonStr, _ := io.ReadAll(resp.Body)
+
+	// The code snippet is unmarshaling the JSON response from the Spotify API into the `searchResponse`
+	// variable, which is of type `responseTypes.SearchResponseType`. The `json.Unmarshal()` function is
+	// used to convert the JSON data in the `jsonStr` variable into a Go struct object of type
+	// `responseTypes.SearchResponseType`. This allows the code to access and use the data from the Spotify
+	// API response in a structured and typed manner.
+	var searchResponse responseTypes.SearchResponseType
+	json.Unmarshal(jsonStr, &searchResponse)
+	if c.Debug {
+		LogInfo("Successfully searched with spotify: " + sentence)
+	}
+
+	return searchResponse, nil
+}
+
+// The `SearchTopResult` function is a method of the `Client` struct in the `spotifyprivateapi`
+// package. It is used to search for a term using Spotify's private API and return only the top
+// results.
+// It takes a `sentence` parameter, which is the search term to search for.
+// The function returns a `SearchTopResultsResponseType` object and an error.
+func (c *Client) SearchTopResult(sentence string) (responseTypes.SearchTopResultsResponseType, error) {
+	// The line `searchResults, err := c.Search(sentence, true)` is calling the `Search` method of the
+	// `Client` struct with the `sentence` parameter and `true` for the `onlyTopResults` parameter. It
+	// assigns the returned `SearchResponseType` object to the `searchResults` variable and any error to
+	// the `err` variable.
+	searchResults, err := c.Search(sentence)
+	if err != nil {
+		if c.Debug {
+			LogError("Error searching with spotify: " + sentence)
+		}
+		return responseTypes.SearchTopResultsResponseType{}, err
+	}
+	// The code block is logging a success message using the `LogInfo` function if the `c.Debug` flag is
+	// set to true.
+	if c.Debug {
+		LogInfo("Successsfully searched with spotify: " + sentence)
+	}
+
+	// It then returns a `SearchTopResultsResponseType` object with the top search results
+	// and extensions, along with a `nil` error.
+	return responseTypes.SearchTopResultsResponseType{
+		TopResults: searchResults.Data.SearchV2.TopResults,
+		Extensions: searchResults.Extensions,
+	}, nil
 }

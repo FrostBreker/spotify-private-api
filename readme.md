@@ -40,6 +40,18 @@ album, err := client.FetchAlbum("albumId")
 if err != nil {
     log.Fatal(err)
 }
+
+// Search in spotify
+searchResults, err := client.Search("query")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Search for top results in spotify
+topTracks, err := client.SearchTopResult("query")
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Documentation
@@ -59,6 +71,14 @@ FetchArtist fetches information about an artist from Spotify's private API. It t
 ### FetchAlbum(albumId string) (responseTypes.Album, error)
 
 FetchAlbum fetches information about an album from Spotify's private API. It takes an albumId parameter, which is the Spotify ID of the album. It returns an AlbumResponseType object and an error.
+
+### Search(query string) (responseTypes.SearchResponseType, error)
+
+Search sends a GET request to Spotify's private API to search for tracks, albums, artists and playlists. It takes a query parameter, which is the search query. It returns a SearchResponseType object and an error.
+
+### SearchTopResult(query string) (responseTypes.SearchTopResultResponseType, error)
+
+SearchTopResult first calls Search to get the search results, then it extracts the top results from the response. It takes a query parameter, which is the search query. It returns a SearchTopResultResponseType object and an error.
 
 ## Contributing
 
