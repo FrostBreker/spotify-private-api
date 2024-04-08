@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/FrostBreker/spotify-private-api/responseTypes"
 )
@@ -204,6 +205,9 @@ func (c *Client) Search(sentence string) (responseTypes.SearchResponseType, erro
 	if c.Debug {
 		LogInfo("Searching with spotify: " + sentence)
 	}
+
+	//Check if sentence has spaces and replace them with +
+	sentence = strings.ReplaceAll(sentence, " ", "+")
 
 	// The `requestURL` variable is a string that contains the URL for making a GET request to Spotify's
 	// private API to search for a term. It includes the `sentence` parameter in the URL to specify the
