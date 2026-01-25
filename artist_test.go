@@ -3,10 +3,11 @@ package spotifyprivateapi
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"net/http"
 	"testing"
 
-	"github.com/FrostBreker/spotify-private-api/errors"
+	pkgErr "github.com/FrostBreker/spotify-private-api/errors"
 )
 
 // mockArtistHTMLResponse creates a mock HTML response with embedded artist data
@@ -68,7 +69,7 @@ func TestClient_FetchArtist(t *testing.T) {
 			}
 
 			if tt.wantErr && tt.artistID == "" {
-				if err != errors.ErrInvalidID {
+				if !errors.Is(err, pkgErr.ErrInvalidID) {
 					t.Errorf("FetchArtist() expected ErrInvalidID, got %v", err)
 				}
 				return

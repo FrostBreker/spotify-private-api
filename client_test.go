@@ -27,6 +27,7 @@ func newTestClient(httpClient *mockHTTPClient) *Client {
 	return NewClient(
 		WithHTTPDoer(httpClient),
 		WithDebug(false),
+		WithLogger(nil),
 	)
 }
 

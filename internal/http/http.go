@@ -2,8 +2,6 @@
 package http
 
 import (
-	"context"
-	"crypto/tls"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
@@ -125,43 +123,7 @@ func (r *stringReadCloser) Close() error {
 	return nil
 }
 
-// NewClient creates a new HTTP client with the given configuration (standard TLS).
-func NewClient(cfg ClientConfig) *http.Client {
-	jar, _ := cookiejar.New(nil)
-
-	return &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConnsPerHost: cfg.MaxIdleConnsPerHost,
-			IdleConnTimeout:     cfg.IdleConnTimeout,
-			TLSNextProto:        make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
-		},
-		Timeout: cfg.Timeout,
-		Jar:     jar,
-	}
-}
-
 // NewDefaultClient creates a browser-like HTTP client.
 func NewDefaultClient() Doer {
 	return NewBrowserClient(DefaultConfig())
-}
-
-// ContextualDoer wraps an http.Client to ensure context is properly handled.
-type ContextualDoer struct {
-	client *http.Client
-}
-
-// NewContextualDoer creates a new ContextualDoer wrapping the given client.
-func NewContextualDoer(client *http.Client) *ContextualDoer {
-	return &ContextualDoer{client: client}
-}
-
-// Do executes the request, ensuring the context is respected.
-func (c *ContextualDoer) Do(req *http.Request) (*http.Response, error) {
-	return c.client.Do(req)
-}
-
-// DoWithContext executes the request with the given context.
-func (c *ContextualDoer) DoWithContext(ctx context.Context, req *http.Request) (*http.Response, error) {
-	req = req.WithContext(ctx)
-	return c.client.Do(req)
 }

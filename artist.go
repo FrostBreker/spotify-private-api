@@ -36,7 +36,12 @@ func (c *Client) FetchArtist(ctx context.Context, artistID string) (*models.Arti
 	if err != nil {
 		return nil, errors.NewRequestError("fetch page", artistURL, err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.logError("Failed to close response body", "error", err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.NewAPIError(resp.StatusCode, "failed to fetch artist page")

@@ -3,10 +3,11 @@ package spotifyprivateapi
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"net/http"
 	"testing"
 
-	"github.com/FrostBreker/spotify-private-api/errors"
+	pkgErr "github.com/FrostBreker/spotify-private-api/errors"
 )
 
 // mockHTMLResponse creates a mock HTML response with embedded initialState for testing
@@ -30,7 +31,7 @@ func TestClient_FetchTrack(t *testing.T) {
 			name:        "empty track ID",
 			trackID:     "",
 			wantErr:     true,
-			wantErrType: errors.ErrInvalidID,
+			wantErrType: pkgErr.ErrInvalidID,
 		},
 		{
 			name:     "successful fetch",
@@ -71,7 +72,7 @@ func TestClient_FetchTrack(t *testing.T) {
 				return
 			}
 
-			if tt.wantErrType != nil && err != tt.wantErrType {
+			if tt.wantErrType != nil && !errors.Is(err, tt.wantErrType) {
 				t.Errorf("FetchTrack() error = %v, wantErrType %v", err, tt.wantErrType)
 				return
 			}

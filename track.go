@@ -38,7 +38,12 @@ func (c *Client) FetchTrack(ctx context.Context, trackID string) (*models.TrackR
 	if err != nil {
 		return nil, errors.NewRequestError("fetch page", trackURL, err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.logError("Failed to close response body", "error", err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.NewAPIError(resp.StatusCode, "failed to fetch track page")
